@@ -38,4 +38,7 @@ private:
 
 	void set_data(ABSTIME time, uint8_t data); // set data to pins
 	void float_data(ABSTIME time); // float the data bus
+
+	//char* _mempopup_caption = nullptr; // caption for memory view popup
+	IMEMORYPOPUP* _mempopup = nullptr; // memory view popup
 };

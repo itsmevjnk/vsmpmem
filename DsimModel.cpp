@@ -75,10 +75,26 @@ VOID DsimModel::setup(IINSTANCE* instance, IDSIMCKT* dsimckt) {
 
 		fclose(mem_file);
 	}
+
+	/* create memory view popup */
+	//char* id = _inst->id(); // get part name
+	//size_t caption_len = 18 + strlen(id) + 1; // "Memory Contents - " + id + null termination
+	//_mempopup_caption = new char[caption_len]; snprintf(_mempopup_caption, caption_len, "Memory Contents - %s", id);
+	CREATEPOPUPSTRUCT cps = {
+		/* id */ 0,
+		/* type */ PWT_MEMORY,
+		/* caption */ (char*)"Memory Contents",
+		/* width */ 16, // width and height are in bytes displayed
+		/* height */ 16,
+		/* flags */ PWF_HIDEONANIMATE | PWF_AUTOREFRESH | PWF_SIZEABLE
+	};
+	_mempopup = (IMEMORYPOPUP*)_inst->createpopup(&cps);
+	_mempopup->setmemory(0, _memory, size); // set up memory buffer for popup
 }
 
 DsimModel::~DsimModel() {
 	if (_memory) delete _memory; // deallocate memory
+	//if (_mempopup_caption) delete _mempopup_caption;
 }
 
 VOID DsimModel::runctrl(RUNMODES mode) {
