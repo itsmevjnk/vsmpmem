@@ -93,13 +93,24 @@ BOOL DsimModel::indicate(REALTIME time, ACTIVEDATA* data) {
 	return FALSE;
 }
 
+/* fixed isdefined (for SUD and whatnot) */
+inline BOOL isundefined(STATE s) {
+	return (s & SP_MASK) == SP_UNDEFINED;
+}
+
 VOID DsimModel::simulate(ABSTIME time, DSIMMODES mode) {
+	// if (mode == DSIMSETTLE) return; // ignore settling phase
+	//if (mode == DSIMBOOT) {
+	//	float_data(time);
+	//	return;
+	//}
+
 	STATE ce = _ce_pin->istate();
 	STATE oe = _oe_pin->istate();
 	STATE we = (_we_pin) ? _we_pin->istate() : SHI; // default to high (no writing) if WE pin doesn't exist (ie. ROM)
 
 	uintptr_t addr = get_address();
-	if (isfloating(ce) || ishigh(ce) || isfloating(oe) || isfloating(we) || ishigh(oe) == ishigh(we)/* || addr == UINTPTR_MAX*/) {
+	if (isundefined(ce) || isundefined(oe) || isundefined(we) || isfloating(ce) || ishigh(ce) || isfloating(oe) || isfloating(we) || ishigh(oe) == ishigh(we)/* || addr == UINTPTR_MAX*/) {
 		/* chip not selected for reading/writing or is in undefined state - go Hi-Z and ignore */
 		float_data(time);
 		return;
